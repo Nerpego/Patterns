@@ -18,7 +18,6 @@ public interface ITaskBuilder
     ITaskBuilder WithDescription(string description);
     ITaskBuilder WithPriority(int priority);
     ITaskBuilder WithDueDate(DateTime dueDate);
-    Task GetTask();
 }
 
 public class ConcreteTaskBuilder : ITaskBuilder
@@ -138,10 +137,14 @@ public class Program
 {
     public static void Main()
     {
+        ITaskBuilder taskBuilder = new ConcreteTaskBuilder("Sample Task")
+            .WithDescription("Sample task description")
+            .WithPriority(1)
+            .WithDueDate(DateTime.Now.AddDays(7));
+
+        Task task = ((ConcreteTaskBuilder)taskBuilder).GetTask();
         ITaskService taskService = new TaskServiceProxy(new TaskService());
-
-        Task task = taskService.GetTaskById(1);
-
+        Task retrievedTask = taskService.GetTaskById(1);
         ICommand command = new TaskOperationCommand(task, taskService);
 
         TaskOperationInvoker invoker = new TaskOperationInvoker();
@@ -149,4 +152,4 @@ public class Program
 
         invoker.ExecuteCommand();
     }
-}
+}   
