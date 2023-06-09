@@ -1,6 +1,5 @@
 ﻿using System;
 
-//Порождающий паттерн
 public class Task
 {
     public string Title { get; set; }
@@ -8,66 +7,63 @@ public class Task
     public int Priority { get; set; }
     public DateTime DueDate { get; set; }
 
-    public class TaskBuilder
+    public Task(string title)
     {
-        private Task task;
-
-        public TaskBuilder(string title)
-        {
-            task = new Task { Title = title };
-        }
-
-        public TaskBuilder WithDescription(string description)
-        {
-            task.Description = description;
-            return this;
-        }
-
-        public TaskBuilder WithPriority(int priority)
-        {
-            task.Priority = priority;
-            return this;
-        }
-
-        public TaskBuilder WithDueDate(DateTime dueDate)
-        {
-            task.DueDate = dueDate;
-            return this;
-        }
-
-        public Task Build()
-        {
-            return task;
-        }
+        Title = title;
     }
 }
 
-//Структурный паттерн
+public interface ITaskBuilder
+{
+    ITaskBuilder WithDescription(string description);
+    ITaskBuilder WithPriority(int priority);
+    ITaskBuilder WithDueDate(DateTime dueDate);
+    Task Build();
+}
+
+public class ConcreteTaskBuilder : ITaskBuilder
+{
+    private Task task;
+
+    public ConcreteTaskBuilder(string title)
+    {
+        task = new Task(title);
+    }
+
+    public ITaskBuilder WithDescription(string description)
+    {
+        task.Description = description;
+        return this;
+    }
+
+    public ITaskBuilder WithPriority(int priority)
+    {
+        task.Priority = priority;
+        return this;
+    }
+
+    public ITaskBuilder WithDueDate(DateTime dueDate)
+    {
+        task.DueDate = dueDate;
+        return this;
+    }
+
+    public Task Build()
+    {
+        return task;
+    }
+}
+
 public interface ITaskService
 {
     Task GetTaskById(int id);
-}
-
-public class TaskServiceProxy : ITaskService
-{
-    private TaskService taskService;
-
-    public Task GetTaskById(int id)
-    {
-        if (taskService == null)
-        {
-            taskService = new TaskService();
-        }
-
-        return taskService.GetTaskById(id);
-    }
 }
 
 public class TaskService : ITaskService
 {
     public Task GetTaskById(int id)
     {
-        return new Task.TaskBuilder("Sample Task")
+        return new ConcreteTaskBuilder("Sample Task")
             .WithDescription("Sample task description")
             .WithPriority(1)
             .WithDueDate(DateTime.Now.AddDays(7))
@@ -75,7 +71,21 @@ public class TaskService : ITaskService
     }
 }
 
-//Поведенческий паттерн
+public class TaskServiceProxy : ITaskService
+{
+    private readonly ITaskService taskService;
+
+    public TaskServiceProxy(ITaskService taskService)
+    {
+        this.taskService = taskService;
+    }
+
+    public Task GetTaskById(int id)
+    {
+        return taskService.GetTaskById(id);
+    }
+}
+
 public interface ICommand
 {
     void Execute();
@@ -84,10 +94,10 @@ public interface ICommand
 
 public class TaskOperationCommand : ICommand
 {
-    private Task task;
-    private TaskService taskService;
+    private readonly Task task;
+    private readonly ITaskService taskService;
 
-    public TaskOperationCommand(Task task, TaskService taskService)
+    public TaskOperationCommand(Task task, ITaskService taskService)
     {
         this.task = task;
         this.taskService = taskService;
@@ -107,6 +117,7 @@ public class TaskOperationCommand : ICommand
         Console.WriteLine("Операция отменена");
     }
 }
+
 public class TaskOperationInvoker
 {
     private ICommand command;
@@ -126,13 +137,14 @@ public class Program
 {
     public static void Main()
     {
-        Task task = new Task.TaskBuilder("Sample Task")
+        ITaskBuilder taskBuilder = new ConcreteTaskBuilder("Sample Task")
             .WithDescription("Sample task description")
             .WithPriority(1)
-            .WithDueDate(DateTime.Now.AddDays(7))
-            .Build();
+            .WithDueDate(DateTime.Now.AddDays(7));
 
-        ITaskService taskService = new TaskServiceProxy();
+        Task task = taskBuilder.Build();
+
+        ITaskService taskService = new TaskServiceProxy(new TaskService());
 
         ICommand command = new TaskOperationCommand(task, taskService);
 

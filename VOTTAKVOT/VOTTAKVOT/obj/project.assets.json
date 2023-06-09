@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Admin\\Desktop\\VOTTAKVOT\\VOTTAKVOT\\VOTTAKVOT.csproj",
+      "projectUniqueName": "C:\\Users\\Admin\\Documents\\GitHub\\Patterns\\VOTTAKVOT\\VOTTAKVOT\\VOTTAKVOT.csproj",
       "projectName": "VOTTAKVOT",
-      "projectPath": "C:\\Users\\Admin\\Desktop\\VOTTAKVOT\\VOTTAKVOT\\VOTTAKVOT.csproj",
+      "projectPath": "C:\\Users\\Admin\\Documents\\GitHub\\Patterns\\VOTTAKVOT\\VOTTAKVOT\\VOTTAKVOT.csproj",
       "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Admin\\Desktop\\VOTTAKVOT\\VOTTAKVOT\\obj\\",
+      "outputPath": "C:\\Users\\Admin\\Documents\\GitHub\\Patterns\\VOTTAKVOT\\VOTTAKVOT\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config"
